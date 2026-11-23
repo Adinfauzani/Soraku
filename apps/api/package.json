@@ -5,6 +5,7 @@
   "description": "Soraku Backend API",
   "main": "dist/src/main.js",
   "scripts": {
+    "prebuild": "prisma generate",
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
