@@ -1,8 +1,8 @@
 {
-  "name": "@sorami/admin",
+  "name": "@soraku/admin",
   "version": "0.1.0",
   "private": true,
-  "description": "Sorami Admin Panel",
+  "description": "Soraku Admin Panel",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -1,6 +1,16 @@
 # Sorami Development TODO
 ## Sorami Master TODO
 
+### Completed (May 2026)
+- [x] `/top-rated` API route - AnimeController + ApiService with AniList support
+- [x] `anime-server.ts` uses `https://soramiapi.vercel.app` as default API base
+- [x] Web build compiles successfully (Next.js 16, Turbopack)
+- [x] API build compiles successfully (NestJS)
+- [x] UI redesigned with sidebar navigation (glass cards, animations, rainbow genre colors)
+- [x] Mobile 3-card / Desktop 5-card grid layout
+- [x] Sidebar with dark glassmorphism styling
+- [x] vercel.json configured for monorepo deployment
+
 ### Foundation / Planning
 
 - [x] Define product vision, MVP scope, premium roadmap

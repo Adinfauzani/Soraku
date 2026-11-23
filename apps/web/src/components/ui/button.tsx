@@ -4,17 +4,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soraku-primary focus-visible:ring-offset-2 focus-visible:ring-offset-soraku-dark disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-soraku-primary text-white hover:bg-soraku-primary/90 shadow-lg shadow-soraku-primary/20",
+        default: "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20",
         destructive: "bg-red-500/90 text-white hover:bg-red-500/80",
-        outline: "border border-soraku-secondary/30 bg-transparent text-soraku-light hover:bg-soraku-secondary/20 hover:border-soraku-primary/50",
-        secondary: "bg-soraku-secondary/20 text-soraku-light hover:bg-soraku-secondary/30",
-        ghost: "text-soraku-light hover:bg-soraku-secondary/20",
-        accent: "bg-soraku-accent text-soraku-dark hover:bg-soraku-accent/90",
-        glass: "glass text-soraku-light hover:bg-soraku-secondary/20",
+        outline: "border border-muted-foreground/30 bg-transparent text-foreground hover:bg-muted-foreground/20 hover:border-primary/50",
+        secondary: "bg-muted-foreground/20 text-foreground hover:bg-muted-foreground/30",
+        ghost: "text-foreground hover:bg-muted-foreground/20",
+        accent: "bg-primary text-background hover:bg-primary/90",
+        glass: "glass text-foreground hover:bg-muted-foreground/20",
       },
       size: {
         default: "h-10 px-4 py-2",

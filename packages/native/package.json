@@ -1,0 +1,9 @@
+{
+  "name": "@soraku/native",
+  "version": "0.1.0",
+  "description": "Native IPC schema for Soraku desktop",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts"
+}

@@ -1,0 +1,44 @@
+name = "soraku-worker"
+main = "src/index.ts"
+compatibility_date = "2025-02-14"
+
+# =============================================================================
+# Routes
+# =============================================================================
+routes = [
+  { pattern = "soraku.app/info/*", zone_id = "ZONE_ID_PLACEHOLDER" },
+  { pattern = "soraku.app/watch/*", zone_id = "ZONE_ID_PLACEHOLDER" },
+  { pattern = "soraku.app/trending", zone_id = "ZONE_ID_PLACEHOLDER" },
+  { pattern = "soraku.app/schedule", zone_id = "ZONE_ID_PLACEHOLDER" },
+  { pattern = "soraku.app/search", zone_id = "ZONE_ID_PLACEHOLDER" },
+  { pattern = "soraku.app/image/*", zone_id = "ZONE_ID_PLACEHOLDER" },
+  { pattern = "soraku.app/subtitle/*", zone_id = "ZONE_ID_PLACEHOLDER" },
+  { pattern = "soraku.app/stream/*", zone_id = "ZONE_ID_PLACEHOLDER" },
+]
+
+# =============================================================================
+# Environment Variables
+# =============================================================================
+[vars]
+ORIGIN_API_URL = "https://sorakuapi.vercel.app"
+ORIGIN_WEB_URL = "https://soraku.vercel.app"
+DEFAULT_SUBTITLE_LANG = "id"
+CACHE_TTL_IMAGE = "86400"
+CACHE_TTL_API = "300"
+CACHE_TTL_STREAM = "3600"
+
+# =============================================================================
+# Environments
+# =============================================================================
+[env.staging]
+name = "soraku-worker-staging"
+routes = [
+  { pattern = "staging.soraku.app/*", zone_id = "ZONE_ID_PLACEHOLDER" },
+]
+[vars.staging]
+ORIGIN_API_URL = "https://sorakuapi-staging.vercel.app"
+ORIGIN_WEB_URL = "https://soraku-staging.vercel.app"
+DEFAULT_SUBTITLE_LANG = "id"
+CACHE_TTL_IMAGE = "86400"
+CACHE_TTL_API = "300"
+CACHE_TTL_STREAM = "3600"

@@ -1,0 +1,51 @@
+{
+  "name": "@thaunknown/yencode",
+  "version": "1.5.5",
+  "type": "module",
+  "description": "SIMD accelerated yEnc encoder/decoder and CRC32 calculator",
+  "keywords": [
+    "yenc",
+    "yencode",
+    "crc32"
+  ],
+  "files": [
+    "y.*",
+    "index.*",
+    "src/**/*",
+    "prebuilds/**/*",
+    "crcutil-1.0/**/*",
+    "binding.gyp"
+  ],
+  "license": "CC0-1.0",
+  "author": "Anime Tosho",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/animetosho/node-yencode.git"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "engines": {
+    "node": ">=18"
+  },
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/thaunknown/node-yencode/issues"
+  },
+  "dependencies": {
+    "node-gyp-build": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "cmake-napi": "^1.2.2",
+    "cmake-npm": "^1.1.1",
+    "eslint-config-standard-universal": "^1.0.9",
+    "prebuildify": "^6.0.1"
+  },
+  "scripts": {
+    "compile": "tsc --noCheck",
+    "install": "node-gyp-build",
+    "prebuild": "prebuildify --napi --strip",
+    "prebuild-musl": "prebuildify --napi --strip --libc=musl --tag-libc",
+    "prebuild-ia32": "prebuildify --napi --strip --arch=ia32"
+  }
+}

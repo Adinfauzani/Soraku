@@ -7,14 +7,14 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-soraku-primary text-white",
-        secondary: "bg-soraku-secondary/20 text-soraku-light",
+        default: "bg-primary text-white",
+        secondary: "bg-muted-foreground/20 text-foreground",
         destructive: "bg-red-500/90 text-white",
-        accent: "bg-soraku-accent text-soraku-dark",
-        outline: "border border-soraku-secondary/30 text-soraku-light",
+        accent: "bg-primary text-background",
+        outline: "border border-muted-foreground/30 text-foreground",
         airing: "badge-airing",
-        completed: "bg-soraku-secondary/30 text-soraku-light",
-        upcoming: "bg-soraku-accent/20 text-soraku-accent",
+        completed: "bg-muted-foreground/30 text-foreground",
+        upcoming: "bg-primary/20 text-primary",
       },
     },
     defaultVariants: {

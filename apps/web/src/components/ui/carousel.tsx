@@ -68,13 +68,13 @@ export function Carousel({
       {(title || icon) && (
         <div className="flex items-center justify-between px-4 md:px-6 mb-4">
           <div className="flex items-center gap-3">
-            {icon && <span className="text-soraku-primary">{icon}</span>}
-            {title && <h2 className="text-xl font-bold text-soraku-light">{title}</h2>}
+            {icon && <span className="text-primary">{icon}</span>}
+            {title && <h2 className="text-xl font-bold text-foreground">{title}</h2>}
           </div>
           {viewAllLink && (
             <a
               href={viewAllLink}
-              className="text-sm text-soraku-secondary hover:text-soraku-primary transition-colors flex items-center gap-1"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
             >
               View all
               <ChevronRight className="w-4 h-4" />
@@ -89,9 +89,9 @@ export function Carousel({
         {canScrollLeft && (
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-40 w-12 h-full bg-gradient-to-r from-soraku-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-start pl-2"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-40 w-12 h-full bg-gradient-to-r from-background to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-start pl-2"
           >
-            <div className="w-10 h-10 rounded-full bg-soraku-dark/80 flex items-center justify-center text-soraku-light hover:bg-soraku-primary hover:text-white transition-colors">
+            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-primary hover:text-white transition-colors">
               <ChevronLeft className="w-6 h-6" />
             </div>
           </button>
@@ -109,9 +109,9 @@ export function Carousel({
         {canScrollRight && (
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-40 w-12 h-full bg-gradient-to-l from-soraku-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-end pr-2"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-40 w-12 h-full bg-gradient-to-l from-background to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-end pr-2"
           >
-            <div className="w-10 h-10 rounded-full bg-soraku-dark/80 flex items-center justify-center text-soraku-light hover:bg-soraku-primary hover:text-white transition-colors">
+            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-primary hover:text-white transition-colors">
               <ChevronRight className="w-6 h-6" />
             </div>
           </button>

@@ -1,0 +1,49 @@
+{
+  "name": "@thaunknown/utp-native",
+  "version": "2.5.7",
+  "description": "Native bindings for libutp",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "lib",
+    "ucat.js",
+    "binding.cc",
+    "binding.gyp",
+    "deps",
+    "prebuilds"
+  ],
+  "gypfile": true,
+  "bin": {
+    "ucat": "./ucat.js"
+  },
+  "engines": {
+    "node": ">=8.12"
+  },
+  "dependencies": {
+    "napi-macros": "^2.0.0",
+    "node-gyp-build": "^4.2.0",
+    "readable-stream": "^4.7.0"
+  },
+  "devDependencies": {
+    "prebuildify": "^6.0.1",
+    "tape": "^5.10.2",
+    "node-gyp": "^13.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThaUnknown/utp-native.git"
+  },
+  "author": "ThaUnknown (@ThaUnknown)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ThaUnknown/utp-native/issues"
+  },
+  "homepage": "https://github.com/ThaUnknown/utp-native#readme",
+  "scripts": {
+    "test-timeouts": "tape test/timeouts.js",
+    "test": "tape test/net.js test/sockets.js test/udp.js",
+    "install": "node-gyp-build",
+    "fetch-libutp": "git submodule update --recursive --init",
+    "prebuild": "prebuildify --napi --strip"
+  }
+}

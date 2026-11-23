@@ -1,12 +1,12 @@
-# Sorami Anime Streaming Ecosystem
+# Soraku Anime Streaming Ecosystem
 
-Sorami is a modern, scalable, premium anime streaming ecosystem built with a clean monorepo architecture.
+Soraku is a modern, scalable, premium anime streaming ecosystem built with a clean monorepo architecture.
 
 ## 🏗️ Monorepo Structure
 ```
-sorami/
+soraku/
 ├── apps/
-│   ├── mobile/         # Flutter Mobile App
+│   ├── mobile/         # Kotlin/Android with Jetpack Compose
 │   ├── api/            # NestJS Backend API
 │   ├── admin/          # Next.js Admin Dashboard
 │   └── landing/        # Marketing Website
@@ -27,15 +27,13 @@ sorami/
 ## 🚀 Tech Stack
 
 ### Mobile Frontend
-- Flutter 3.x
-- Dart
-- Riverpod
-- GoRouter
-- Better Player Plus
-- Dio
-- Hive Flutter
-- Cached Network Image
-- Firebase Messaging
+- Kotlin
+- Jetpack Compose
+- Retrofit
+- OkHttp
+- Coil
+- Firebase
+- Media3 / ExoPlayer
 
 ### Backend API
 - NestJS 10.x
@@ -49,104 +47,16 @@ sorami/
 
 ### Admin Panel
 - Next.js 15
-- TypeScript
+- React 18
 - Tailwind CSS
-- Shadcn UI
-
-### DevOps
-- Docker
-- Turborepo
-- pnpm
-- GitHub Actions
-- Nginx
-- VPS Ubuntu
-- Sentry
-- Uptime Kuma
-
-## 📱 Core Features
-
-### Public User
-- **Home**: Hero spotlight slider, Continue watching, Trending anime, Popular today, Ongoing updates, Completed anime, New season releases, Recommended for you
-- **Search**: Realtime search, Genre filter, Status filter, Year filter, Studio filter, Popular keywords
-- **Anime Detail**: Poster banner, Synopsis, Genre chips, Score/rating, Characters, Staff, Relations, Trailer, Episode list, Recommendations
-- **Streaming Player**: HLS playback, Subtitle selector, Multi quality selector (320p/480p/720p/1080p), Resume progress, Auto next episode, Skip intro, Fullscreen landscape, Playback speed, Gesture volume/brightness/seek
-- **Library**: Watch history, Favorites, Watchlist, Downloads, Continue offline playback
-- **Account**: Login/Register, Google login, Notification settings, Dark mode default, Light mode, Device session management
-
-### Community Features
-- Comments per anime
-- Episode discussions
-- User ratings
-- Anime reviews
-- Follow users
-- Activity feed
-- Profile badges
-
-### Premium Features
-- No ads
-- Faster CDN route
-- Full HD unlock (720p+)
-- Priority streaming
-- Early access simulcast
-- Exclusive badge
-- Premium profile flair
-
-### Admin Panel Features
-- Dashboard: Total users, Active viewers, Daily streams, Popular anime, Revenue analytics, Peak traffic chart, Retention analytics
-- Anime Management: Add/Edit/Delete anime, Bulk import anime, Schedule releases, Spotlight banner control, Genre management
-- Episode Management: Upload HLS source, Subtitle management, Multi-quality links, Auto publish scheduler
-- User Management: Ban user, Reset library, Subscription management, Warning system
-- Notification Center: Push broadcast, Episode release alerts, Promotional campaigns
+- TanStack Query
 
 ## 🛠️ Getting Started
 
-### Prerequisites
-- Node.js >=18.0.0
-- pnpm >=8.0.0
-- Flutter >=3.0.0
-- PostgreSQL
-- Redis
-
-### Installation
 ```bash
 # Install dependencies
 pnpm install
 
-# Set up environment variables
-cp .env.example .env
-
-# Prisma setup (for API)
-cd apps/api
-pnpm prisma generate
-pnpm prisma migrate dev
-
-# Start development servers
-pnpm dev  # Runs all apps in parallel
-```
-
-### Individual Service Commands
-```bash
-# Mobile app
-cd apps/mobile
-flutter pub get
-flutter run
-
-# API
-cd apps/api
-pnpm run start:dev
-
-# Admin panel
-cd apps/admin
-pnpm dev
-
-# Landing website
-cd apps/landing
-pnpm dev
-```
-
-## 🧪 Testing
-
-```bash
 # Run all tests
 pnpm test
 
@@ -162,8 +72,8 @@ pnpm build
 ### Backend API (Docker/VPS)
 ```bash
 cd apps/api
-docker build -t sorami-api .
-docker run -p 3000:3000 sorami-api
+docker build -t soraku-api .
+docker run -p 3000:3000 soraku-api
 ```
 
 ### Admin Panel & Landing (Vercel)
@@ -178,7 +88,7 @@ vercel
 ```
 
 ### Mobile App
-Follow Flutter build instructions for Android/iOS releases.
+Follow Android build instructions for APK releases.
 
 ## 🤝 Contributing
 
@@ -195,5 +105,5 @@ This project is proprietary and confidential.
 ## 🙏 Acknowledgments
 
 - Inspired by Netflix Mobile, Crunchyroll, Miruro, AniList, and HiAnime
-- Built with ❤️ by Soraku Studio
+- Built with ❤️ by Rynex Studio
 - Powered by the Soraku Community

@@ -1,12 +1,14 @@
 "use client";
 
 import { create } from "zustand";
+import { applyTheme, getSavedTheme, type ThemeKey } from "@/lib/theme";
 
 interface UIState {
   isSearchOpen: boolean;
   isPlayerOpen: boolean;
   isAuthModalOpen: boolean;
   isProfileMenuOpen: boolean;
+  isMobileSidebarOpen: boolean;
   toasts: Array<{
     id: string;
     title: string;
@@ -14,8 +16,8 @@ interface UIState {
     type: "success" | "error" | "info" | "warning";
   }>;
   isSidebarExpanded: boolean;
-  colorTheme: "dark" | "light";
-  
+  colorTheme: ThemeKey;
+
   openSearch: () => void;
   closeSearch: () => void;
   openPlayer: () => void;
@@ -24,12 +26,14 @@ interface UIState {
   closeAuthModal: () => void;
   openProfileMenu: () => void;
   closeProfileMenu: () => void;
-  
+  openMobileSidebar: () => void;
+  closeMobileSidebar: () => void;
+
   addToast: (toast: Omit<UIState["toasts"][0], "id">) => void;
   removeToast: (id: string) => void;
-  
+
   toggleSidebar: () => void;
-  setColorTheme: (theme: "dark" | "light") => void;
+  setColorTheme: (theme: ThemeKey) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -37,10 +41,11 @@ export const useUIStore = create<UIState>((set) => ({
   isPlayerOpen: false,
   isAuthModalOpen: false,
   isProfileMenuOpen: false,
+  isMobileSidebarOpen: false,
   toasts: [],
-  isSidebarExpanded: true,
-  colorTheme: "dark",
-  
+  isSidebarExpanded: false,
+  colorTheme: getSavedTheme(),
+
   openSearch: () => set({ isSearchOpen: true }),
   closeSearch: () => set({ isSearchOpen: false }),
   openPlayer: () => set({ isPlayerOpen: true }),
@@ -49,14 +54,19 @@ export const useUIStore = create<UIState>((set) => ({
   closeAuthModal: () => set({ isAuthModalOpen: false }),
   openProfileMenu: () => set({ isProfileMenuOpen: true }),
   closeProfileMenu: () => set({ isProfileMenuOpen: false }),
-  
+  openMobileSidebar: () => set({ isMobileSidebarOpen: true }),
+  closeMobileSidebar: () => set({ isMobileSidebarOpen: false }),
+
   addToast: (toast) => set((state) => ({
     toasts: [...state.toasts, { ...toast, id: Math.random().toString(36).slice(2) }]
   })),
   removeToast: (id) => set((state) => ({
     toasts: state.toasts.filter((t) => t.id !== id)
   })),
-  
+
   toggleSidebar: () => set((state) => ({ isSidebarExpanded: !state.isSidebarExpanded })),
-  setColorTheme: (colorTheme) => set({ colorTheme }),
+  setColorTheme: (colorTheme) => {
+    applyTheme(colorTheme);
+    set({ colorTheme });
+  },
 }));

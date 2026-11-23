@@ -1,0 +1,39 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "include": [
+    "electron.vite.config.*",
+    "eslint.config.mjs",
+    "src/main/**/*",
+    "src/preload/**/*",
+    "src/types/**/*"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "ignoreDeprecations": "6.0",
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "maxNodeModuleJsDepth": 1,
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "declaration": true,
+    "types": [
+      "electron-vite/node"
+    ],
+    "paths": {
+      "@soraku/native": ["../../packages/native/src/index.ts"],
+      "@soraku/torrent-client": ["./src/types/torrent-client.d.ts"]
+    }
+  }
+}

@@ -3,10 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Play, Star, Calendar, Clapperboard } from "lucide-react";
 import type { SpotlightAnime } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { animeUrl, slugify } from "@/lib/slug";
 
 interface SpotlightSliderProps {
   anime: SpotlightAnime[];
@@ -15,9 +16,9 @@ interface SpotlightSliderProps {
 
 function SpotlightSkeleton() {
   return (
-    <section className="relative h-[55vh] md:h-[75vh] min-h-[400px] md:min-h-[500px] w-full overflow-hidden bg-soraku-dark">
+    <section className="relative h-[55vh] md:h-[75vh] min-h-[400px] md:min-h-[500px] w-full overflow-hidden bg-background">
       <Skeleton className="absolute inset-0 rounded-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-soraku-dark via-soraku-dark/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
       <div className="relative h-full flex items-center">
         <div className="container mx-auto px-4 md:px-6 max-w-7xl space-y-6">
           <Skeleton className="h-5 w-24 rounded-full" />
@@ -72,7 +73,7 @@ export function SpotlightSlider({ anime, isLoading = false }: SpotlightSliderPro
   }
 
   return (
-    <section className="relative h-[55vh] md:h-[75vh] min-h-[400px] md:min-h-[500px] w-full overflow-hidden bg-soraku-dark group">
+    <section className="relative h-[55vh] md:h-[75vh] min-h-[400px] md:min-h-[500px] w-full overflow-hidden bg-background group">
       <div className="embla h-full" ref={emblaRef}>
         <div className="embla__container flex h-full">
           {anime.map((item) => (
@@ -80,21 +81,23 @@ export function SpotlightSlider({ anime, isLoading = false }: SpotlightSliderPro
               key={item.id}
               className="embla__slide flex-[0_0_100%] relative min-w-0 h-full"
             >
-              <div className="absolute inset-0">
-                <img
-                  src={item.cover || item.banner || item.poster}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+              <div className="absolute inset-0 bg-background">
+                {(item.cover || item.banner || item.poster) && (
+                  <img
+                    src={item.cover || item.banner || item.poster}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
 
-              <div className="absolute inset-0 bg-gradient-to-r from-soraku-dark via-soraku-dark/70 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-soraku-dark via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
               <div className="relative h-full flex items-center">
                 <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                   <div className="max-w-2xl space-y-4 md:space-y-5 animate-fade-in-up">
-                    <span className="inline-block text-soraku-primary font-bold tracking-wider text-sm uppercase">
+                    <span className="inline-block text-primary font-bold tracking-wider text-sm uppercase">
                       Spotlight
                     </span>
 
@@ -104,45 +107,47 @@ export function SpotlightSlider({ anime, isLoading = false }: SpotlightSliderPro
 
                     <div className="flex flex-wrap items-center gap-3">
                       {item.type && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-soraku-surface text-white/90 text-xs font-medium">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-card text-white/90 text-xs font-medium">
                           {item.type}
                         </span>
                       )}
                       {item.totalEpisodes && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soraku-surface text-soraku-secondary text-xs">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card text-muted-foreground text-xs">
                           <Clapperboard className="w-3.5 h-3.5" />
                           {item.totalEpisodes} {item.totalEpisodes === 1 ? "Episode" : "Episodes"}
                         </span>
                       )}
                       {item.year && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soraku-surface text-soraku-secondary text-xs">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card text-muted-foreground text-xs">
                           <Calendar className="w-3.5 h-3.5" />
                           {item.year}
                         </span>
                       )}
                       {item.rating && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soraku-surface text-soraku-secondary text-xs">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card text-muted-foreground text-xs">
                           <Star className="w-3.5 h-3.5 text-yellow-400" fill="currentColor" />
                           {item.rating}
                         </span>
                       )}
                     </div>
 
-                    <p className="text-soraku-secondary line-clamp-2 text-sm md:text-base max-w-xl leading-relaxed">
+                    <p className="text-muted-foreground line-clamp-2 text-sm md:text-base max-w-xl leading-relaxed">
                       {item.description || "No description available."}
                     </p>
 
                     <div className="flex flex-wrap items-center gap-3 md:gap-4 pt-2">
                       <Link
-                        href={`/watch/${item.id}?ep=1`}
-                        className="inline-flex items-center gap-2 bg-soraku-primary hover:bg-soraku-primary/80 text-white rounded-full px-6 py-3 font-bold text-sm md:text-base transition-colors"
+                        to="/watch/$id/$"
+                        params={{ id: item.id, _splat: slugify(item.title) }}
+                        search={{ ep: 1 }}
+                        className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white rounded-full px-6 py-3 font-bold text-sm md:text-base transition-colors"
                       >
                         <Play className="w-4 h-4 fill-current" />
                         Watch Now
                       </Link>
                       <Link
-                        href={`/anime/${item.id}`}
-                        className="inline-flex items-center border border-white/20 hover:border-soraku-primary text-white rounded-full px-6 py-3 font-bold text-sm md:text-base transition-colors"
+                        to={animeUrl(item.id, item.title)}
+                        className="inline-flex items-center border border-white/20 hover:border-primary text-white rounded-full px-6 py-3 font-bold text-sm md:text-base transition-colors"
                       >
                         Details
                       </Link>
@@ -157,7 +162,7 @@ export function SpotlightSlider({ anime, isLoading = false }: SpotlightSliderPro
 
       <button
         onClick={scrollPrev}
-        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-lg bg-soraku-surface/80 hover:bg-soraku-surface text-white/80 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-lg bg-card/80 hover:bg-card text-white/80 hover:text-white transition-all opacity-0 group-hover:opacity-100"
         aria-label="Previous slide"
       >
         <ChevronLeft className="w-5 h-5" />
@@ -165,7 +170,7 @@ export function SpotlightSlider({ anime, isLoading = false }: SpotlightSliderPro
 
       <button
         onClick={scrollNext}
-        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-lg bg-soraku-surface/80 hover:bg-soraku-surface text-white/80 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-lg bg-card/80 hover:bg-card text-white/80 hover:text-white transition-all opacity-0 group-hover:opacity-100"
         aria-label="Next slide"
       >
         <ChevronRight className="w-5 h-5" />
@@ -178,7 +183,7 @@ export function SpotlightSlider({ anime, isLoading = false }: SpotlightSliderPro
             onClick={() => scrollTo(index)}
             className={`transition-all duration-300 rounded-full ${
               index === selectedIndex
-                ? "w-6 h-2 bg-soraku-primary"
+                ? "w-6 h-2 bg-primary"
                 : "w-2 h-2 bg-white/30 hover:bg-white/50"
             }`}
             aria-label={`Go to slide ${index + 1}`}
@@ -193,7 +198,7 @@ export function SpotlightSlider({ anime, isLoading = false }: SpotlightSliderPro
             onClick={() => scrollTo(index)}
             className={`transition-all duration-300 rounded-full ${
               index === selectedIndex
-                ? "w-6 h-2 bg-soraku-primary"
+                ? "w-6 h-2 bg-primary"
                 : "w-2 h-2 bg-white/30 hover:bg-white/50"
             }`}
             aria-label={`Go to slide ${index + 1}`}

@@ -2,3 +2,29 @@ packages:
   - 'apps/*'
   - 'packages/*'
   - 'infra/*'
+
+allowBuilds:
+  '@consumet/extensions@https://codeload.github.com/jasanpreetn9/consumet.ts/tar.gz/e02b8d12ce72e1014e8445aefd9184f9ee73da15': true
+  'webtorrent@https://codeload.github.com/thaunknown/webtorrent/tar.gz/aio': true
+  'electron-winstaller': true
+  'esbuild': true
+  '@thaunknown/utp-native': true
+  '@thaunknown/yencode': true
+  'bufferutil': true
+  'ip-set': true
+  'node-datachannel': true
+  'utf-8-validate': true
+  'electron': true
+  '@firebase/util': false
+  '@nestjs/core': false
+  '@prisma/client': false
+  '@prisma/engines': false
+  bcrypt: false
+  msgpackr-extract: false
+  prisma: false
+  protobufjs: false
+  sharp: false
+  unrs-resolver: false
+  workerd: false
+  yarn: false
+  core-js: false

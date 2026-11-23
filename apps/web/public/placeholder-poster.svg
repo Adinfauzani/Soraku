@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="270" viewBox="0 0 180 270">
+  <rect width="180" height="270" fill="#14141f" rx="8"/>
+  <rect x="20" y="60" width="140" height="150" fill="#1e1e2e" rx="4"/>
+  <text x="90" y="145" text-anchor="middle" fill="#64748b" font-size="12" font-family="sans-serif">No Poster</text>
+</svg>

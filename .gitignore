@@ -1,18 +1,108 @@
-# Ignore everything in the repository
-*
-# Whitelist source directories and their contents
-!apps/
-!apps/**/*
-!docs/
-!docs/**/*
-!infra/
-!infra/**/*
-!packages/
-!packages/**/*
-# Whitelist specific root files
-!.gitignore
-!README.md
-!TODO.md
-!SECURITY.md
-!LICENSE
-!LICENSE.md
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Package-manager lockfiles not used by this workspace
+package-lock.json
+
+# Local npm config can contain registry tokens
+.npmrc
+
+# Firebase config can contain API keys and client identifiers
+**/GoogleService-Info.plist
+**/google-services.json
+**/firebase-adminsdk-*.json
+**/service-account*.json
+
+# Flutter DevTools and local Redis dump
+devtools_options.yaml
+dump.rdb
+
+# Xcode local workspace settings
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+key.properties
+
+# Build outputs
+.next/
+.turbo/
+dist/
+build/
+coverage/
+.vercel/
+*.tsbuildinfo
+.eslintcache
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+turbo.log
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+*.ipa
+*.apk
+*.aab
+*.app/
+*.xcarchive/
+
+# Mobile platform generated files
+**/android/.gradle/
+**/android/.cxx/
+**/android/build/
+**/android/**/build/
+**/android/local.properties
+**/android/**/local.properties
+**/android/**/captures/
+**/android/**/GeneratedPluginRegistrant.java
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/**/DerivedData/
+**/ios/Flutter/ephemeral/
+**/ios/**/Flutter/ephemeral/
+**/ios/Flutter/App.framework/
+**/ios/**/Flutter/App.framework/
+**/ios/Flutter/Flutter.framework/
+**/ios/**/Flutter/Flutter.framework/
+**/ios/Flutter/Flutter.podspec
+**/ios/**/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/**/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/**/Flutter/flutter_export_environment.sh
+**/ios/Flutter/GeneratedPluginRegistrant.*
+**/ios/**/Flutter/GeneratedPluginRegistrant.*
+**/ios/**/xcuserdata/
+**/macos/Pods/
+**/macos/**/Flutter/ephemeral/
+**/macos/**/xcuserdata/
+**/windows/x64/
+**/windows/x86/
+
+# OS/editor/local
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.agents

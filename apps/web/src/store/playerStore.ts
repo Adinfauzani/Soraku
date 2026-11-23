@@ -10,6 +10,15 @@ interface PlayerState {
   isPlaying: boolean;
   currentTime: number;
   duration: number;
+  isLoading: boolean;
+  currentAnimeId: string | null;
+  currentEpisodeId: string | null;
+  currentEpisode: number;
+  sources: Array<{ url: string; quality: string; isM3U8?: boolean }>;
+  currentSource: string;
+  subtitles: Array<{ url: string; label: string; lang?: string }>;
+  currentSubtitle: string;
+
   toggleTheaterMode: () => void;
   setVolume: (volume: number) => void;
   toggleMute: () => void;
@@ -19,6 +28,14 @@ interface PlayerState {
   setIsPlaying: (isPlaying: boolean) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
+  setAnime: (animeId: string, episodeId: string, episode: number) => void;
+  setProgress: (progress: number) => void;
+  setLoading: (isLoading: boolean) => void;
+  setSources: (sources: Array<{ url: string; quality: string; isM3U8?: boolean }>) => void;
+  setCurrentSource: (url: string) => void;
+  setSubtitles: (subtitles: Array<{ url: string; label: string; lang?: string }>) => void;
+  setCurrentSubtitle: (url: string) => void;
+  reset: () => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set) => ({
@@ -31,6 +48,15 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   isPlaying: false,
   currentTime: 0,
   duration: 0,
+  isLoading: false,
+  currentAnimeId: null,
+  currentEpisodeId: null,
+  currentEpisode: 1,
+  sources: [],
+  currentSource: "",
+  subtitles: [],
+  currentSubtitle: "",
+
   toggleTheaterMode: () => set((state) => ({ isTheaterMode: !state.isTheaterMode })),
   setVolume: (volume) => set({ volume }),
   toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
@@ -40,4 +66,31 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   setIsPlaying: (isPlaying) => set({ isPlaying }),
   setCurrentTime: (currentTime) => set({ currentTime }),
   setDuration: (duration) => set({ duration }),
+  setAnime: (animeId, episodeId, episode) => set({
+    currentAnimeId: animeId,
+    currentEpisodeId: episodeId,
+    currentEpisode: episode,
+    currentTime: 0,
+    duration: 0,
+    isPlaying: false,
+  }),
+  setProgress: () => {},
+  setLoading: (isLoading) => set({ isLoading }),
+  setSources: (sources) => set({ sources, currentSource: sources[0]?.url || "" }),
+  setCurrentSource: (url) => set({ currentSource: url }),
+  setSubtitles: (subtitles) => set({ subtitles }),
+  setCurrentSubtitle: (url) => set({ currentSubtitle: url }),
+  reset: () => set({
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0,
+    isLoading: false,
+    currentAnimeId: null,
+    currentEpisodeId: null,
+    currentEpisode: 1,
+    sources: [],
+    currentSource: "",
+    subtitles: [],
+    currentSubtitle: "",
+  }),
 }));

@@ -3,7 +3,7 @@
 ## ✅ All Tasks Completed:
 
 ### 1. Firebase Configuration for Mobile App
-- Fixed pubspec.yaml: Changed `publish_to: 'Soraku Studio'` to `publish_to: 'none'`
+- Fixed pubspec.yaml: Changed `publish_to: 'Rynex Studio'` to `publish_to: 'none'`
 - Ran `flutterfire configure --project=appsoraku --platforms=android,ios,macos,web,windows --yes`
 - Successfully registered Firebase apps for all platforms:
   - Android: 1:506443610589:android:4c42f2e32bb30edf609e34

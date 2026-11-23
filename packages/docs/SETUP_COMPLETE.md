@@ -18,7 +18,7 @@ Sorami monorepo structure has been successfully created.
    - `/.github/workflows` - GitHub Actions CI/CD
 
 2. **Mobile App**:
-   - pubspec.yaml updated with Soraku Studio as publisher
+   - pubspec.yaml updated with Rynex Studio as publisher
    - Dependencies: flutter_riverpod, go_router, better_player_plus, dio, hive_flutter, cached_network_image, firebase_core, firebase_messaging
    - Main.dart configured with Riverpod ProviderScope and GoRouter
    - Theme file with Sorami brand colors

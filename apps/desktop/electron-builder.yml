@@ -1,0 +1,61 @@
+appId: com.soraku.desktop
+productName: Soraku
+directories:
+  buildResources: build
+asarUnpack:
+  - resources/**
+  - out/main/native-assets/**/*.node
+  - out/main/native-modules/**/prebuilds/*/*.node
+files:
+  - "!**/.vscode/*"
+  - "!src/*"
+  - "!electron.vite.config.{js,ts,mjs,cjs}"
+  - "!{.env,.env.*,.npmrc,pnpm-lock.yaml,pnpm-workspace.yaml}"
+  - "!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}"
+  - "!*.tsbuildinfo"
+  - "!**/*.md"
+  - "!eslint.config.mjs"
+extraResources:
+  - from: resources-web
+    to: web
+electronLanguages:
+  - en-US
+  - id
+win:
+  executableName: Soraku
+  target:
+    - target: nsis
+      arch:
+        - x64
+  verifyUpdateCodeSignature: false
+  artifactName: ${os}-${productName}-${version}-installer.${ext}
+nsis:
+  artifactName: ${os}-${productName}-${version}-installer.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+  oneClick: false
+  perMachine: true
+  deleteAppDataOnUninstall: true
+  allowToChangeInstallationDirectory: true
+linux:
+  artifactName: ${os}-${productName}-${version}-linux.${ext}
+  executableName: Soraku
+  target:
+    - target: deb
+      arch:
+        - x64
+    - target: AppImage
+      arch:
+        - x64
+  maintainer: Rynex Studio
+  category: AudioVideo;Video
+  desktop:
+    entry:
+      Type: "Application"
+      Encoding: "UTF-8"
+      Name: "Soraku"
+      Comment: "Anime streaming app"
+      Keywords: "anime"
+      Terminal: "false"
+npmRebuild: true

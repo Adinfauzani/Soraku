@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  miruro-api:
+    build: .
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MIRURO_DOMAINS=miruro.bz,miruro.ru,miruro.to,miruro.tv
+    restart: unless-stopped
