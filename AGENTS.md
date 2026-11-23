@@ -54,7 +54,7 @@ Different models and ID strategies. Verify which schema a change belongs to.
 ## Infra / deployment
 
 - `infra/docker/docker-compose.yml` — API on :4000 + sidecars `wajik-api:3001` and `miruro-api:3002` (same compose network; use service names as host, not localhost).
-- Vercel (`vercel.json`) routes `/api/*` to `apps/api/src/serverless.ts` (`@vercel/node`). Web deployment config (`apps/web/vercel.json` `next build`) is stale — web is Vite.
+- Vercel (`vercel.json`) — `buildCommand` jalan `cd apps/api && pnpm prisma generate && pnpm build`, lalu `builds` (`@vercel/node`) deploys `apps/api/dist/serverless.js` (JS sudah di-compile, bukan TS source). Pastikan `DATABASE_URL` di-set di Vercel Environment Variables (termasuk untuk Build).
 - Worker: `wrangler deploy`; routes for `soraku.app/info/*`, `/watch/*`, `/stream/*`.
 
 ## Gotchas
