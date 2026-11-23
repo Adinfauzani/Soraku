@@ -51,10 +51,45 @@ export class Jikan implements Provider {
     } catch { return null; }
   }
 
-  async health(): Promise<boolean> {
+async health(): Promise<boolean> {
     try {
-      await axios.get(`${API}/random/anime`, { timeout: 5000 });
+      await axios.get(`${API}/top/anime`, { params: { limit: 1 }, timeout: 5000 });
       return true;
     } catch { return false; }
+  }
+
+  async filter(page = 1, perPage = 20, opts: Record<string, any> = {}): Promise<SearchResult> {
+    try {
+      const params: Record<string, any> = { page, limit: perPage };
+      if (opts.q) params.q = opts.q;
+      if (opts.genres) params.genres = opts.genres;
+      if (opts.genres_exclude) params.genres_exclude = opts.genres_exclude;
+      if (opts.studios) params.studios = opts.studios;
+      if (opts.season) params.season = opts.season;
+      if (opts.year) params.year = opts.year;
+      if (opts.status) params.status = opts.status;
+      if (opts.type) params.type = opts.type;
+      if (opts.sort) params.sort = opts.sort;
+      const { data } = await axios.get(`${API}/anime`, { params });
+      return { results: (data.data || []).map(toEntry), hasNextPage: data.pagination?.has_next_page };
+    } catch { return { results: [] }; }
+  }
+
+  async popular(page = 1): Promise<SearchResult> {
+    try {
+      const { data } = await axios.get(`${API}/top/anime`, { params: { page, limit: 20 } });
+      return { results: (data.data || []).map(toEntry), hasNextPage: data.pagination?.has_next_page };
+    } catch { return { results: [] }; }
+  }
+
+  async trending(page = 1): Promise<SearchResult> {
+    return this.popular(page);
+  }
+
+  async topRated(page = 1): Promise<SearchResult> {
+    try {
+      const { data } = await axios.get(`${API}/top/anime`, { params: { page, limit: 20, filter: 'bypopularity' } });
+      return { results: (data.data || []).map(toEntry), hasNextPage: data.pagination?.has_next_page };
+    } catch { return { results: [] }; }
   }
 }

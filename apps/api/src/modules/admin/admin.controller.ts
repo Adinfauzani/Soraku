@@ -19,21 +19,6 @@ export class AdminController {
     return this.adminService.getDashboard();
   }
 
-  @Get('providers')
-  @ApiOperation({ summary: 'List all streaming providers with health status' })
-  getProviders() {
-    return this.adminService.getProviders();
-  }
-
-  @Patch('providers/:slug')
-  @ApiOperation({ summary: 'Enable/disable provider or set priority' })
-  updateProvider(
-    @Param('slug') slug: string,
-    @Body() data: { isActive?: boolean; priority?: number },
-  ) {
-    return this.adminService.updateProvider(slug, data);
-  }
-
   @Get('mappings')
   @ApiOperation({ summary: 'List all anime mappings' })
   @ApiQuery({ name: 'page', required: false })
@@ -45,41 +30,22 @@ export class AdminController {
   @Post('mappings')
   @ApiOperation({ summary: 'Create a new anime mapping' })
   createMapping(@Body() data: {
-    animeId: string;
-    provider: string;
-    externalId: string;
-    externalSlug?: string;
-    title?: string;
-    url?: string;
-    isPrimary?: boolean;
-    language?: string;
+    anilistId: number;
+    consumetId?: string;
+    otakudesuId?: string;
+    oploverzId?: string;
+    hianimeId?: string;
+    animekaiId?: string;
+    kuramanimeId?: string;
+    anoboyId?: string;
   }) {
     return this.adminService.createMapping(data);
   }
 
   @Patch('mappings/:id')
   @ApiOperation({ summary: 'Update an existing mapping' })
-  updateMapping(@Param('id') id: string, @Body() data: {
-    externalId?: string;
-    externalSlug?: string;
-    title?: string;
-    url?: string;
-    isPrimary?: boolean;
-    language?: string;
-  }) {
+  updateMapping(@Param('id') id: string, @Body() data: Record<string, any>) {
     return this.adminService.updateMapping(id, data);
-  }
-
-  @Post('mappings/sync/:animeId')
-  @ApiOperation({ summary: 'Trigger metadata resync for an anime' })
-  triggerSync(@Param('animeId') animeId: string) {
-    return this.adminService.triggerSync(animeId);
-  }
-
-  @Get('analytics/streams')
-  @ApiOperation({ summary: 'Stream analytics including failures, latency, and usage' })
-  getStreamAnalytics() {
-    return this.adminService.getStreamAnalytics();
   }
 
   @Get('health')

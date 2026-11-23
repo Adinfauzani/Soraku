@@ -1,7 +1,6 @@
 import { Global, Module, OnModuleInit } from '@nestjs/common';
 import { SourceRegistry } from './source-registry.service';
 import { ConsumetSource } from './sources/consumet.source';
-import { SamehadakuSource } from './sources/samehadaku.source';
 import { OploverzSource } from './sources/oploverz.source';
 import { OtakudesuSource } from './sources/otakudesu.source';
 import { HiAnimeSource } from './sources/hianime.source';
@@ -18,7 +17,6 @@ import { TMDBAnimeSource } from './sources/tmdb.source';
   providers: [
     SourceRegistry,
     ConsumetSource,
-    SamehadakuSource,
     OploverzSource,
     OtakudesuSource,
     HiAnimeSource,
@@ -36,7 +34,6 @@ export class SourcesModule implements OnModuleInit {
   constructor(
     private readonly registry: SourceRegistry,
     private readonly consumet: ConsumetSource,
-    private readonly samehadaku: SamehadakuSource,
     private readonly oploverz: OploverzSource,
     private readonly otakudesu: OtakudesuSource,
     private readonly hianime: HiAnimeSource,
@@ -51,7 +48,6 @@ export class SourcesModule implements OnModuleInit {
 
   onModuleInit() {
     this.registry.register(this.consumet);
-    this.registry.register(this.samehadaku);
     this.registry.register(this.oploverz);
     this.registry.register(this.otakudesu);
     this.registry.register(this.hianime);

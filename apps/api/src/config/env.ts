@@ -1,10 +1,11 @@
+import 'dotenv/config';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 
 export const env = createEnv({
   server: {
     // Database
-    DATABASE_URL: z.string().url().or(z.string().startsWith('postgresql://')).or(z.string().startsWith('file:')),
+    DATABASE_URL: z.string().startsWith('postgresql://').or(z.string().startsWith('file:')).or(z.string().url()),
 
     // Redis
     REDIS_HOST: z.string().default('localhost'),
@@ -14,13 +15,23 @@ export const env = createEnv({
     PORT: z.coerce.number().default(3000),
     CORS_ORIGIN: z.string().default('http://localhost:3000'),
 
-    // JWT
-    JWT_SECRET: z.string(),
+    // JWT (fallback, main auth is Supabase now)
+    JWT_SECRET: z.string().optional(),
     JWT_EXPIRES_IN: z.string().default('7d'),
+
+    // Supabase Auth
+    SUPABASE_URL: z.string().url(),
+    SUPABASE_PUBLISHABLE_KEY: z.string(),
+    SUPABASE_SECRET_KEY: z.string(),
+    SUPABASE_JWKS_URL: z.string().url(),
+
+    // AniList OAuth
+    ANILIST_CLIENT_ID: z.string(),
+    ANILIST_CLIENT_SECRET: z.string(),
+    ANILIST_REDIRECT_URI: z.string().default('soraku://anilist-callback'),
 
     // External API keys
     TMDB_API_KEY: z.string().optional(),
-    ANILIST_CLIENT_ID: z.string().optional(),
     MAL_CLIENT_ID: z.string().optional(),
 
     // Cloudflare R2
@@ -32,6 +43,8 @@ export const env = createEnv({
     // Stream providers
     CONSUMET_API_URL: z.string().url().default('https://kuroji-api-j4mh.onrender.com'),
     API_STREAMS_BASE_URL: z.string().url().default('https://apistreams.vercel.app'),
+    WAJIK_API_URL: z.string().url().default('http://localhost:3001'),
+    MIRURO_API_URL: z.string().url().default('http://localhost:3002'),
     DEFAULT_SUBTITLE_LANG: z.string().default('id'),
 
     // Monitoring
@@ -40,8 +53,12 @@ export const env = createEnv({
     // Admin
     ADMIN_API_KEY: z.string().optional(),
 
+    // Firebase
+    FIREBASE_SERVICE_ACCOUNT_JSON: z.string().optional(),
+    FIREBASE_SERVICE_ACCOUNT_PATH: z.string().optional(),
+
     // Bull/Queue
-    BULL_REDIS_PREFIX: z.string().default('{sorami}'),
+    BULL_REDIS_PREFIX: z.string().default('{soraku}'),
     WORKER_CONCURRENCY: z.coerce.number().default(5),
   },
   runtimeEnv: process.env,

@@ -146,19 +146,21 @@ export class Anime {
 
   @Public()
   @Get(':id/episodes')
-  @ApiOperation({ summary: 'Episode list for an anime' })
-  async episodes(@Param('id') id: string) {
-    const cacheKey = `anime:episodes:${id}`;
-    const cached = await this.cache.get<any[]>(cacheKey);
-    if (cached) return cached;
-
+  @ApiOperation({ summary: 'Episode list for an anime (alias)' })
+  async episodesAlias(@Param('id') id: string) {
+    // Legacy alias. Canonical episode list lives in src/anime/anime.ctrl.ts
+    // which falls back to provider scrapers when AniList reports 0 eps.
     const anilist = this.registry.get('AniList');
     if (anilist) {
       try {
         const info = await anilist.info(id);
         if (info && info.totalEpisodes && info.totalEpisodes > 0) {
-          const eps = this.generateEpisodes(id, info.totalEpisodes);
-          await this.cache.set(cacheKey, eps, 3600);
+          const eps = Array.from({ length: info.totalEpisodes }, (_, i) => ({
+            id: `${ANILIST_EPISODE_PREFIX}${id}-${i + 1}`,
+            number: i + 1,
+            title: `Episode ${i + 1}`,
+          }));
+          await this.cache.set(`anime:episodes:${id}`, eps, 3600);
           return eps;
         }
       } catch {}

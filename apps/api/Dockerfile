@@ -8,13 +8,13 @@ WORKDIR /app
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/api/package.json apps/api/
 COPY packages/ packages/
-RUN pnpm install --frozen-lockfile --filter @sorami/api
+RUN pnpm install --frozen-lockfile --filter @soraku/api
 
 FROM deps AS build
 WORKDIR /app
 COPY . .
-RUN pnpm --filter @sorami/api exec prisma generate
-RUN pnpm --filter @sorami/api build
+RUN pnpm --filter @soraku/api exec prisma generate
+RUN pnpm --filter @soraku/api build
 
 FROM base AS runner
 WORKDIR /app

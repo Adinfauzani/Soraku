@@ -7,7 +7,7 @@ const ANILIST_API = 'https://graphql.anilist.co';
 const SEARCH_QUERY = `
   query ($query: String, $perPage: Int) {
     Page(perPage: $perPage) {
-      media(search: $query, type: ANIME) {
+      media(search: $query, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         coverImage { large }
@@ -24,7 +24,7 @@ const SEARCH_QUERY = `
 
 const DETAIL_QUERY = `
   query ($id: Int) {
-    Media(id: $id, type: ANIME) {
+    Media(id: $id, type: ANIME, isAdult: false) {
       id
       title { romaji english native }
       coverImage { large }
@@ -46,7 +46,7 @@ const DETAIL_QUERY = `
 const POPULAR_QUERY = `
   query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(sort: POPULARITY_DESC, type: ANIME) {
+      media(sort: POPULARITY_DESC, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         coverImage { large }
@@ -62,7 +62,7 @@ const POPULAR_QUERY = `
 const TRENDING_QUERY = `
   query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(sort: TRENDING_DESC, type: ANIME) {
+      media(sort: TRENDING_DESC, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         bannerImage
@@ -85,7 +85,7 @@ const TRENDING_QUERY = `
 const SEASONAL_QUERY = `
   query ($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, type: ANIME) {
+      media(season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         bannerImage
@@ -107,7 +107,7 @@ const SEASONAL_QUERY = `
 const TOP_RATED_QUERY = `
   query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(sort: SCORE_DESC, type: ANIME) {
+      media(sort: SCORE_DESC, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         bannerImage
@@ -129,7 +129,7 @@ const TOP_RATED_QUERY = `
 const AIRING_QUERY = `
   query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(status: RELEASING, sort: POPULARITY_DESC, type: ANIME) {
+      media(status: RELEASING, sort: POPULARITY_DESC, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         bannerImage
@@ -152,7 +152,7 @@ const AIRING_QUERY = `
 const MOVIES_QUERY = `
   query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(format: MOVIE, sort: POPULARITY_DESC, type: ANIME) {
+      media(format: MOVIE, sort: POPULARITY_DESC, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         bannerImage
@@ -174,7 +174,7 @@ const MOVIES_QUERY = `
 const LATEST_QUERY = `
   query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
-      media(status: RELEASING, sort: UPDATED_AT_DESC, type: ANIME) {
+      media(status: RELEASING, sort: UPDATED_AT_DESC, type: ANIME, isAdult: false) {
         id
         title { romaji english native }
         bannerImage
@@ -328,7 +328,7 @@ export class AniListSource implements AnimeSource {
   async health(): Promise<boolean> {
     try {
       await axios.post(ANILIST_API, {
-        query: 'query { Page(perPage: 1) { media(type: ANIME) { id } } }',
+        query: 'query { Page(perPage: 1) { media(type: ANIME, isAdult: false) { id } } }',
       }, { timeout: 5000 });
       return true;
     } catch {

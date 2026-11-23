@@ -10,7 +10,9 @@ import type { Request, Response } from 'express';
 const ANILIST_EP_REGEX = /^anilist-ep-(\d+)-(\d+)$/;
 
 const SERVER_PROVIDER_MAP: Record<string, string> = {
-  Sorami: 'Samehadaku',
+  local: 'Miruro',
+  lcl: 'Otakudesu',
+  miruro: 'Miruro',
   Hikari: 'Oploverz',
   Sora: 'Otakudesu',
   Bun: 'Anoboy',
@@ -56,7 +58,6 @@ export class Stream {
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
     const attempts = [
-      async () => { const p = this.registry.get('Samehadaku'); return p?.stream ? p.stream(`/episode/${slug}-episode-${epNum}/`) : null; },
       async () => { const p = this.registry.get('HiAnime'); return p?.stream ? p.stream(`${slug}?ep=${epNum}`) : null; },
       async () => { const p = this.registry.get('AnimePahe'); return p?.stream ? p.stream(`${slug}-${epNum}`) : null; },
       async () => {
@@ -126,7 +127,7 @@ export class Stream {
     }
 
     // Fallback through providers
-    const fallbackOrder = ['Samehadaku', 'HiAnime', 'AnimePahe'];
+    const fallbackOrder = ['HiAnime', 'AnimePahe'];
     for (const name of fallbackOrder) {
       const p = this.registry.get(name);
       if (p?.stream) {
@@ -168,7 +169,6 @@ export class Stream {
   }
 
   private readonly PROVIDER_STREAM_FORMATS: Record<string, (slug: string, epNum: number) => string> = {
-    Samehadaku: (slug, epNum) => `/episode/${slug}-episode-${epNum}/`,
     HiAnime: (slug, epNum) => `${slug}?ep=${epNum}`,
     AnimePahe: (slug, epNum) => `${slug}-${epNum}`,
     Otakudesu: (slug, epNum) => `${slug}-episode-${epNum}`,
@@ -219,36 +219,82 @@ export class Stream {
   async proxyFetch(@Query('url') url: string, @Req() req: Request, @Res() res: Response) {
     if (!url) throw new NotFoundException('Missing url query param');
 
+    const isGoogleVideo = /(googlevideo|videoplayback)/i.test(url);
+    const urlOrigin = isGoogleVideo
+      ? 'https://desustream.me'
+      : (() => {
+          try {
+            return new URL(url).origin;
+          } catch {
+            return '';
+          }
+        })();
+
+    const attemptFetch = async (attempt: number): Promise<{ response: any }> => {
+      try {
+        const response = await axios.get(url, {
+          responseType: 'stream',
+          timeout: 60000,
+          maxRedirects: 8,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+            Accept: '*/*',
+            Range: req.headers.range || 'bytes=0-',
+            Origin: urlOrigin,
+            Referer: isGoogleVideo
+              ? 'https://desustream.me/dstream/playdesu/new/'
+              : `${urlOrigin}/`,
+            'Accept-Language': 'id,en-US;q=0.9,en;q=0.8',
+          },
+        });
+        return { response };
+      } catch (err: any) {
+        const status = err?.response?.status ?? 0;
+        if ((status === 403 || status === 429 || status === 502 || status >= 500) && attempt < 3) {
+          this.log.warn(`Proxy upstream ${status} for ${url.slice(0, 80)}… retry ${attempt + 1}/3`);
+          await new Promise((r) => setTimeout(r, 1200 * attempt));
+          return attemptFetch(attempt + 1);
+        }
+        throw err;
+      }
+    };
+
     try {
-      const response = await axios.get(url, {
-        responseType: 'stream',
-        timeout: 30000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          Referer: 'https://hianime.to/',
-        },
-      });
+      const { response } = await attemptFetch(1);
 
       const contentType = String(response.headers['content-type'] || 'application/octet-stream');
       res.setHeader('Content-Type', contentType);
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', '*');
+      res.setHeader('Accept-Ranges', 'bytes');
+      res.status(response.status ?? 200);
 
-      // For m3u8 manifests: proxy the manifest but rewrite segment URLs
-      // to direct CDN URLs (not through proxy) to save bandwidth
-      if (contentType.includes('m3u8') || url.endsWith('.m3u8')) {
+      if (response.status === 206) {
+        if (response.headers['content-range']) res.setHeader('Content-Range', String(response.headers['content-range']));
+        if (response.headers['content-length']) res.setHeader('Content-Length', String(response.headers['content-length']));
+        response.data.pipe(res);
+        return;
+      }
+
+      // For m3u8 manifests: proxy the manifest and rewrite every media URL
+      // back through this same proxy so playback never hits CDN CORS/blocking
+      const isM3u8 = /mpegurl|m3u8/i.test(contentType) || /\.m3u8(\?|$)/i.test(url);
+      if (isM3u8) {
         let manifest = '';
         for await (const chunk of response.data) {
           manifest += chunk.toString();
         }
 
+        const proxyBase = `${req.protocol}://${req.get('host')}/api/stream/proxy/fetch?url=`;
         const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
         const rewritten = manifest.split('\n').map((line) => {
           const trimmed = line.trim();
           if (!trimmed || trimmed.startsWith('#')) return line;
-          if (trimmed.startsWith('http')) return trimmed;
-          return `${baseUrl}${trimmed}`;
+          const absolute = trimmed.startsWith('http')
+            ? trimmed
+            : `${baseUrl}${trimmed}`;
+          return `${proxyBase}${encodeURIComponent(absolute)}`;
         }).join('\n');
 
         res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
@@ -257,11 +303,14 @@ export class Stream {
 
       // For non-m3u8 content (mp4, ts), pipe directly
       response.data.pipe(res);
-
-      response.data.pipe(res);
     } catch (err: any) {
       this.log.error(`Proxy fetch failed for ${url}: ${err.message}`);
-      res.status(502).json({ error: 'Failed to fetch proxied content' });
+      res.status(502).json({
+        error: 'Failed to fetch proxied content',
+        detail: err?.message,
+        status: err?.response?.status ?? null,
+        code: err?.code ?? null,
+      });
     }
   }
 }

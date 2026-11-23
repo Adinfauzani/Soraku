@@ -19,7 +19,7 @@ export class EpisodeService {
   }
 
   async resolveStreamUrl(animeSlug: string, episodeNumber: number) {
-    const fallbackOrder = ['Samehadaku', 'Otakudesu', 'HiAnime', 'AnimePahe', 'KickAssAnime', 'AnimeKai'];
+    const fallbackOrder = ['Otakudesu', 'HiAnime', 'AnimePahe', 'KickAssAnime', 'AnimeKai'];
     for (const name of fallbackOrder) {
       const p = this.registry.get(name);
       if (p && p.stream) {

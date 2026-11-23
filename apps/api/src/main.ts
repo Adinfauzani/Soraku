@@ -1,53 +1,67 @@
+import 'dotenv/config';
 import './dns-fix';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import cookieParser from 'cookie-parser';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import serverless from 'serverless-http';
+import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
 
+let cachedApp: express.Express;
+
+function getCorsOrigins() {
+  const origins = env.CORS_ORIGIN.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  return origins.includes('*') ? undefined : origins;
+}
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  
-  // Global middleware
-  app.use(cookieParser());
-  app.enableCors({
-    origin: env.CORS_ORIGIN,
-    credentials: true,
-  });
-  
-  // Global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
-  
-  // Swagger setup
+  const expressApp = express();
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+
+  app.enableCors({ origin: getCorsOrigins(), credentials: true });
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
-    .setTitle('Sorami API')
-    .setDescription('Professional anime streaming orchestration engine by Soraku Studio')
-    .setVersion('2.0')
-    .addTag('anime', 'Anime discovery and metadata')
-    .addTag('episode', 'Episode listing and streaming')
-    .addTag('stream', 'Smart streaming orchestration')
-    .addTag('metadata', 'Rich metadata intelligence')
-    .addTag('providers', 'Provider management and health')
-    .addTag('auth', 'Authentication and authorization')
-    .addTag('users', 'User profiles and management')
-    .addTag('community', 'Community comments and activity')
-    .addTag('library', 'User library, favorites, and history')
-    .addTag('admin', 'Admin dashboard and system management')
-    .addTag('meta', 'Metadata resolution')
+    .setTitle('Soraku API')
+    .setDescription('Anime streaming orchestration engine by Rynex Studio')
+    .setVersion('1.0.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-  
-  const port = env.PORT;
-  await app.listen(port, '0.0.0.0');
-  console.log(`Application is running on: http://0.0.0.0:${port}`);
+  expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(document));
+
+  await app.init();
+  return expressApp;
 }
-bootstrap();
+
+export const handler = async (event: any, context: any) => {
+  cachedApp = cachedApp ?? (await bootstrap());
+  return serverless(cachedApp)(event, context);
+};
+
+if (!process.env.VERCEL) {
+  bootstrap()
+    .then((expressApp) => {
+      const port = Number(process.env.PORT) || 3001;
+      expressApp.listen(port, '0.0.0.0', (err?: Error) => {
+        if (err) {
+          console.error(`Failed to start server on port ${port}:`, err.message);
+          process.exit(1);
+        }
+        console.log(`Soraku API running on http://localhost:${port}`);
+        console.log(`Swagger docs at http://localhost:${port}/api/docs`);
+      });
+    })
+    .catch((err) => {
+      console.error('Failed to bootstrap application:', err);
+      process.exit(1);
+    });
+}

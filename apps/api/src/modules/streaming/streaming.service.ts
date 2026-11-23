@@ -36,7 +36,7 @@ export class StreamingService {
     const cached = await this.cache.get<StreamManifest>(cacheKey);
     if (cached) return cached;
 
-    const mapping = await this.animeIdMapper.getMapping(animeId);
+    const mapping = await this.animeIdMapper.getMappingByString(animeId);
     if (!mapping) {
       this.logger.warn(`No mapping found for animeId: ${animeId}`);
       return null;

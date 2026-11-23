@@ -125,7 +125,7 @@ async function main() {
   console.log(`✓ Seeded ${servers.length} streaming servers`);
 
   // ── Admin User ──────────────────────────────────────────────────
-  const adminEmail = 'admin@sorami.app';
+  const adminEmail = 'admin@soraku.app';
   const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
 
   if (!existingAdmin) {
@@ -140,7 +140,7 @@ async function main() {
         premiumUntil: new Date('2099-12-31'),
       },
     });
-    console.log('✓ Seeded admin user (admin@sorami.app / admin123)');
+    console.log('✓ Seeded admin user (admin@soraku.app / admin123)');
   } else {
     console.log('✗ Admin user already exists, skipping');
   }

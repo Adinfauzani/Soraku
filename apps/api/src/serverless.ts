@@ -27,9 +27,9 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Sorami API')
-    .setDescription('Professional anime streaming orchestration engine by Soraku Studio')
-    .setVersion('2.0')
+    .setTitle('Soraku API')
+    .setDescription('Professional anime streaming orchestration engine by Rynex Studio')
+    .setVersion('1.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);

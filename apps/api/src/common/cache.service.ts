@@ -18,8 +18,52 @@ export class CacheService {
   private readonly store = new Map<string, CacheEntry<unknown>>();
   private hits = 0;
   private misses = 0;
+  private redis: any = null;
+  private redisAvailable = false;
+
+  constructor() {
+    this.initRedis();
+  }
+
+  private initRedis() {
+    const url = process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
+    if (!url) {
+      this.logger.log('No Redis URL configured, using in-memory cache');
+      return;
+    }
+    try {
+      // eslint-disable-next-line @typescript-es/no-var-requires
+      const Redis = require('ioredis');
+      this.redis = new Redis(url, {
+        maxRetriesPerRequest: 1,
+        retryStrategy: () => null,
+        lazyConnect: true,
+      });
+      this.redis.on('error', (err: Error) => {
+        this.logger.warn(`Redis error: ${err.message}`);
+        this.redisAvailable = false;
+      });
+      this.redis.connect().then(() => {
+        this.redisAvailable = true;
+        this.logger.log('Redis connected');
+      }).catch((err: Error) => {
+        this.logger.warn(`Redis connection failed: ${err.message}, using in-memory fallback`);
+      });
+    } catch (err) {
+      this.logger.warn(`Redis init failed: ${(err as Error).message}, using in-memory cache`);
+    }
+  }
 
   async get<T>(key: string): Promise<T | null> {
+    if (this.redisAvailable && this.redis) {
+      try {
+        const raw = await this.redis.get(key);
+        if (raw) {
+          this.hits++;
+          return JSON.parse(raw) as T;
+        }
+      } catch {}
+    }
     const entry = this.store.get(key);
     if (!entry) {
       this.misses++;
@@ -35,6 +79,12 @@ export class CacheService {
   }
 
   async set<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
+    if (this.redisAvailable && this.redis) {
+      try {
+        await this.redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);
+        return;
+      } catch {}
+    }
     this.store.set(key, {
       data: value,
       expiresAt: Date.now() + ttlSeconds * 1000,
@@ -45,6 +95,9 @@ export class CacheService {
   }
 
   async del(key: string): Promise<void> {
+    if (this.redisAvailable && this.redis) {
+      try { await this.redis.del(key); } catch {}
+    }
     this.store.delete(key);
   }
 
@@ -70,6 +123,7 @@ export class CacheService {
   getStats() {
     return {
       size: this.store.size,
+      redisAvailable: this.redisAvailable,
       hits: this.hits,
       misses: this.misses,
       hitRate: this.hits + this.misses > 0

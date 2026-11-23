@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { AnimeEntry, SearchResult, StreamResult, Provider } from './types';
 
-const BASE = 'https://animekai.to';
+const BASE = 'https://animekai.be';
 
 @Injectable()
 export class AnimeKai implements Provider {

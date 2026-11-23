@@ -1,20 +1,51 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { META, ANIME } from '@consumet/extensions';
-import { ISearch, IAnimeInfo, IAnimeResult, ISource } from '@consumet/extensions';
 import { AnimeSource, SourceAnimeEntry, SourceAnimeDetail, SourceEpisode } from '../interfaces/anime-source.interface';
 import { env } from '../../../config/env';
 
-function createProvider(provider?: any) {
-  return new META.Anilist(provider);
+type ConsumetExtensions = {
+  META: { Anilist: new (provider?: any) => any };
+  ANIME: {
+    AnimeSaturn: new () => any;
+    AnimeUnity: new () => any;
+    AnimeKai: new () => any;
+    AnimePahe: new () => any;
+  };
+};
+
+let consumet: ConsumetExtensions | null = null;
+try {
+  // Optional dependency; may be unavailable/unbuilt in some environments.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  consumet = require('@consumet/extensions') as ConsumetExtensions;
+} catch {
+  consumet = null;
 }
 
-const providerFactories = [
-  () => createProvider(),
-  () => createProvider(new ANIME.AnimeSaturn()),
-  () => createProvider(new ANIME.AnimeUnity()),
-  () => createProvider(new ANIME.AnimeKai()),
-  () => createProvider(new ANIME.AnimePahe()),
-];
+function createProvider(provider?: any) {
+  if (!consumet?.META?.Anilist) return null;
+  return new consumet.META.Anilist(provider);
+}
+
+function buildClients(): any[] {
+  if (!consumet) return [];
+  const factories: Array<() => any> = [
+    () => createProvider(),
+    () => consumet?.ANIME?.AnimeSaturn ? createProvider(new consumet.ANIME.AnimeSaturn()) : null,
+    () => consumet?.ANIME?.AnimeUnity ? createProvider(new consumet.ANIME.AnimeUnity()) : null,
+    () => consumet?.ANIME?.AnimeKai ? createProvider(new consumet.ANIME.AnimeKai()) : null,
+    () => consumet?.ANIME?.AnimePahe ? createProvider(new consumet.ANIME.AnimePahe()) : null,
+  ];
+  const clients: any[] = [];
+  for (const fn of factories) {
+    try {
+      const c = fn();
+      if (c) clients.push(c);
+    } catch {
+      // ignore individual provider init failures
+    }
+  }
+  return clients;
+}
 
 @Injectable()
 export class ConsumetSource implements AnimeSource {
@@ -24,7 +55,7 @@ export class ConsumetSource implements AnimeSource {
   readonly subtitleLanguages = ['id', 'en'];
   readonly defaultSubtitleLang = env.DEFAULT_SUBTITLE_LANG;
   private readonly logger = new Logger(ConsumetSource.name);
-  private readonly clients = providerFactories.map((fn) => fn());
+  private readonly clients = buildClients();
 
   private get defaultClient() {
     return this.clients[0];
@@ -33,8 +64,8 @@ export class ConsumetSource implements AnimeSource {
   async search(query: string): Promise<SourceAnimeEntry[]> {
     for (const client of this.clients) {
       try {
-        const res: ISearch<IAnimeResult> = await client.search(query, 1, 20);
-        if (res.results?.length) return (res.results || []).map((item) => this.toEntry(item));
+        const res: any = await client.search(query, 1, 20);
+        if (res?.results?.length) return (res.results || []).map((item: any) => this.toEntry(item));
       } catch {}
     }
     return [];
@@ -43,7 +74,7 @@ export class ConsumetSource implements AnimeSource {
   async getAnime(id: string): Promise<SourceAnimeDetail | null> {
     for (const client of this.clients) {
       try {
-        const info: IAnimeInfo = await client.fetchAnimeInfo(id);
+        const info: any = await client.fetchAnimeInfo(id);
         if (info) return this.toDetail(info);
       } catch {}
     }
@@ -60,19 +91,19 @@ export class ConsumetSource implements AnimeSource {
       try {
         let episodeId = '';
         try {
-          const info: IAnimeInfo = await client.fetchAnimeInfo(animeSlug);
-          const ep = (info.episodes || []).find((e) => e.number === episodeNumber);
+          const info: any = await client.fetchAnimeInfo(animeSlug);
+          const ep = (info?.episodes || []).find((e: any) => e.number === episodeNumber);
           if (ep?.id) episodeId = ep.id;
         } catch {
           episodeId = `${animeSlug}-ep-${episodeNumber}`;
         }
         if (!episodeId) continue;
 
-        const sources: ISource = await client.fetchEpisodeSources(episodeId);
-        const m3u8 = (sources.sources || []).find(
-          (s) => s.isM3U8 || s.url?.includes('.m3u8'),
+        const sources: any = await client.fetchEpisodeSources(episodeId);
+        const m3u8 = (sources?.sources || []).find(
+          (s: any) => s.isM3U8 || s.url?.includes('.m3u8'),
         );
-        const url = m3u8?.url || sources.sources?.[0]?.url || null;
+        const url = m3u8?.url || sources?.sources?.[0]?.url || null;
         if (url) return url;
       } catch (err) {
         this.logger.verbose(`resolveEpisodeUrl failed for provider: ${(err as Error).message}`);
@@ -84,14 +115,15 @@ export class ConsumetSource implements AnimeSource {
   async getPopular(page = 1): Promise<SourceAnimeEntry[]> {
     for (const client of this.clients) {
       try {
-        const res: ISearch<IAnimeResult> = await client.fetchPopularAnime(page, 20);
-        if (res.results?.length) return (res.results || []).map((item) => this.toEntry(item));
+        const res: any = await client.fetchPopularAnime(page, 20);
+        if (res?.results?.length) return (res.results || []).map((item: any) => this.toEntry(item));
       } catch {}
     }
     return [];
   }
 
   async health(): Promise<boolean> {
+    if (!this.defaultClient) return false;
     try {
       await this.defaultClient.search('naruto', 1, 1);
       return true;
@@ -100,7 +132,7 @@ export class ConsumetSource implements AnimeSource {
     }
   }
 
-  private toEntry(item: IAnimeResult): SourceAnimeEntry {
+  private toEntry(item: any): SourceAnimeEntry {
     return {
       title: typeof item.title === 'string' ? item.title : (item.title?.english ?? item.title?.romaji ?? ''),
       slug: String(item.id),
@@ -112,7 +144,7 @@ export class ConsumetSource implements AnimeSource {
     };
   }
 
-  private toDetail(info: IAnimeInfo): SourceAnimeDetail {
+  private toDetail(info: any): SourceAnimeDetail {
     return {
       title: typeof info.title === 'string' ? info.title : (info.title?.english ?? info.title?.romaji ?? ''),
       slug: String(info.id),
@@ -123,7 +155,7 @@ export class ConsumetSource implements AnimeSource {
       status: info.status,
       season: info.season,
       studio: info.studios?.[0],
-      episodes: (info.episodes || []).map((ep) => ({
+      episodes: (info.episodes || []).map((ep: any) => ({
         number: ep.number,
         title: ep.title,
         duration: ep.duration as number | undefined,

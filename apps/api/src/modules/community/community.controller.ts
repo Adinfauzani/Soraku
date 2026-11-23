@@ -11,28 +11,28 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class CommunityController {
   constructor(private readonly communityService: CommunityService) {}
 
-  @Get('anime/:animeId/comments')
+  @Get('anime/:anilistId/comments')
   @ApiOperation({ summary: 'Get paginated comments for an anime' })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
   async getComments(
-    @Param('animeId') animeId: string,
+    @Param('anilistId') anilistId: string,
     @Query('page') page = '1',
     @Query('limit') limit = '20',
   ) {
-    return this.communityService.getComments(animeId, parseInt(page, 10), parseInt(limit, 10));
+    return this.communityService.getComments(parseInt(anilistId), parseInt(page, 10), parseInt(limit, 10));
   }
 
-  @Post('anime/:animeId/comments')
+  @Post('anime/:anilistId/comments')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a comment on an anime' })
   async createComment(
-    @Param('animeId') animeId: string,
+    @Param('anilistId') anilistId: string,
     @CurrentUser('id') userId: string,
     @Body('content') content: string,
   ) {
-    return this.communityService.createComment(animeId, userId, content);
+    return this.communityService.createComment(parseInt(anilistId), userId, content);
   }
 
   @Delete('comments/:commentId')
