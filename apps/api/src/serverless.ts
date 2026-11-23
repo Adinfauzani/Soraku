@@ -43,3 +43,5 @@ export const handler = async (event: any, context: any, callback: any) => {
   cachedHandler = cachedHandler ?? (await bootstrap());
   return cachedHandler(event, context, callback);
 };
+
+export default handler;
