@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/api/src/serverless.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "apps/api/src/serverless.ts"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "apps/api/src/serverless.ts"
+    }
+  ]
+}
