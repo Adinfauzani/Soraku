@@ -8,6 +8,10 @@
   ],
   "routes": [
     {
+      "src": "/",
+      "dest": "src/serverless.ts"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "src/serverless.ts"
     }
