@@ -12,7 +12,7 @@
       "dest": "src/serverless.ts"
     },
     {
-      "src": "/api/(.*)",
+      "src": "/api(/.*)?",
       "dest": "src/serverless.ts"
     }
   ]
